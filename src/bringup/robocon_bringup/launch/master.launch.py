@@ -32,6 +32,12 @@ def generate_launch_description():
         description='启用 AprilTag 检测和位姿修正'
     )
 
+    use_rviz_arg = DeclareLaunchArgument(
+        'use_rviz',
+        default_value='true',
+        description='启动 RViz2 可视化 (无显示器时设为 false)'
+    )
+
     # ============================================================
     # 静态坐标变换
     # ============================================================
@@ -82,7 +88,7 @@ def generate_launch_description():
         ]),
         launch_arguments={
             'config_file': 'mid360.yaml',
-            'rviz': 'false',  # Nano 无显示器，禁用 rviz
+            'rviz': LaunchConfiguration('use_rviz'),
         }.items()
     )
 
@@ -170,6 +176,7 @@ def generate_launch_description():
             ]),
             'map': '',
             'use_map_topic': 'true',
+            'use_rviz': LaunchConfiguration('use_rviz'),
         }.items()
     )
 
@@ -220,6 +227,7 @@ def generate_launch_description():
         pcd_map_path_arg,
         start_zone_arg,
         use_apriltag_arg,
+        use_rviz_arg,
 
         # 静态坐标变换 (无时序依赖)
         static_livox_tf,
