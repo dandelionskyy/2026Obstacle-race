@@ -10,8 +10,9 @@ def generate_launch_description():
     nav2_bringup_dir = get_package_share_directory('nav2_bringup')
     rviz_config_dir = os.path.join(nav2_bringup_dir, 'rviz', 'nav2_default_view.rviz')
 
-    use_sim_time = launch.substitutions.LaunchConfiguration('use_sim_time', default='True')
+    use_sim_time = launch.substitutions.LaunchConfiguration('use_sim_time', default='False')
     use_rviz = launch.substitutions.LaunchConfiguration('use_rviz', default='True')
+    map_path = launch.substitutions.LaunchConfiguration('map', default='')
     nav2_param_path = launch.substitutions.LaunchConfiguration(
         'params_file',
         default=os.path.join(fishbot_navigation2_dir, 'config', 'nav2_params.yaml'))
@@ -28,6 +29,11 @@ def generate_launch_description():
             description='Launch RViz2'
         ),
         launch.actions.DeclareLaunchArgument(
+            'map',
+            default_value=map_path,
+            description='2D map file path (empty = no static map)'
+        ),
+        launch.actions.DeclareLaunchArgument(
             'params_file',
             default_value=nav2_param_path,
             description='Full path to param file to load'
@@ -40,7 +46,7 @@ def generate_launch_description():
             launch_arguments={
                 'use_sim_time': use_sim_time,
                 'params_file': nav2_param_path,
-                'map': '',
+                'map': map_path,
                 'use_map_topic': 'true'
             }.items(),
         ),

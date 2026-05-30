@@ -19,6 +19,12 @@ def generate_launch_description():
         description='用于 ICP 初始化的预构建 PCD 地图路径'
     )
 
+    map_arg = DeclareLaunchArgument(
+        'map',
+        default_value='',
+        description='2D 占栅格地图路径 (空则不加载)'
+    )
+
     start_zone_arg = DeclareLaunchArgument(
         'start_zone',
         default_value='ground',
@@ -174,7 +180,7 @@ def generate_launch_description():
             'params_file': PathJoinSubstitution([
                 FindPackageShare('robot_navigation2'), 'config', 'nav2_params.yaml'
             ]),
-            'map': '',
+            'map': LaunchConfiguration('map'),
             'use_map_topic': 'true',
             'use_rviz': LaunchConfiguration('use_rviz'),
         }.items()
@@ -225,6 +231,7 @@ def generate_launch_description():
     return LaunchDescription([
         # 参数
         pcd_map_path_arg,
+        map_arg,
         start_zone_arg,
         use_apriltag_arg,
         use_rviz_arg,
