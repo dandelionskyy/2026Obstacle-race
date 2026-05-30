@@ -39,6 +39,15 @@ LocalizationManager::LocalizationManager(const rclcpp::NodeOptions & options)
   // TF广播器
   tf_broadcaster_ = std::make_shared<tf2_ros::TransformBroadcaster>(this);
 
+  // 启动时默认发布 identity (map与odom重合)
+  // 后续由ICP初始对齐或AprilTag修正更新
+  {
+    std::lock_guard<std::mutex> lock(mutex_);
+    initialized_ = true;
+    map_to_odom_ = Eigen::Matrix4d::Identity();
+    RCLCPP_INFO(this->get_logger(), "使用默认初始位姿: map与odom重合 (原点)");
+  }
+
   // 启动TF广播线程
   tf_thread_ = std::make_unique<std::thread>(
     &LocalizationManager::tfBroadcastLoop, this);
