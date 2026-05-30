@@ -62,6 +62,10 @@ void PCLFiltersNode::getParameters()
   get_parameter("map_resolution", map_resolution_);
   get_parameter("thres_point_count", thres_point_count_);
   get_parameter("map_topic_name", map_topic_name_);
+  // 确保目录路径末尾有斜杠, 否则拼接后变成 /path/mapsscan.pcd
+  if (!file_directory_.empty() && file_directory_.back() != '/') {
+    file_directory_ += '/';
+  }
   pcd_file_ = file_directory_ + file_name_ + ".pcd";
 }
 
