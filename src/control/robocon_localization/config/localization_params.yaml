@@ -1,0 +1,11 @@
+# 定位管理器参数
+localization_manager:
+  ros__parameters:
+    map_frame: "map"
+    odom_frame: "odom"
+    base_frame: "base_link"
+    ema_alpha: 0.3                # EMA 平滑因子
+    max_translation_jump: 0.5     # 米 — 拒绝更大的修正量
+    max_yaw_jump: 15.0            # 度 — 拒绝更大的修正量
+    tf_rate: 100.0                # Hz — TF 发布频率
+    pcd_map_path: "/home/dandelion/fast-lio-nav-obstacle/maps/field_map.pcd"

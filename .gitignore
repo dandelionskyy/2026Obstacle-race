@@ -1,0 +1,28 @@
+# Build artifacts
+build/
+install/
+log/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# ROS
+*.bag
+*.active
+
+# Maps (large files)
+maps/*.pcd
+maps/*.pgm
+
+# Checkpoint runtime files
+src/control/robocon_state_machine/config/checkpoint/*.yaml

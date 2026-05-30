@@ -1,0 +1,18 @@
+# RealSense D455 RGB 相机内参
+# 请替换为实际标定值！
+
+camera_matrix:
+  fx: 495.18
+  fy: 495.46
+  cx: 311.01
+  cy: 221.22
+
+distortion_coefficients:
+  k1: -0.042
+  k2: 0.061
+  p1: 0.0003
+  p2: -0.0004
+  k3: 0.0
+
+image_width: 640
+image_height: 480

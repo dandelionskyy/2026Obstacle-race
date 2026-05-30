@@ -1,0 +1,69 @@
+# AprilTag 世界位姿 (map 坐标系中)
+# 每个标签: id, 位置 (x,y,z) 单位米, 姿态 (roll,pitch,yaw) 单位度
+# 请在比赛前在实际场地上测量这些位置！
+
+tags:
+  - id: 0
+    position: { x: 0.0, y: 0.0, z: 0.15 }
+    orientation: { roll: 0.0, pitch: 0.0, yaw: 0.0 }
+    description: "起始区 (地面)"
+
+  - id: 1
+    position: { x: 1.5, y: 0.0, z: 0.3 }
+    orientation: { roll: 0.0, pitch: 0.0, yaw: 0.0 }
+    description: "直角弯杆绕行 — 入口区"
+
+  - id: 2
+    position: { x: 4.0, y: 0.5, z: 0.3 }
+    orientation: { roll: 0.0, pitch: 0.0, yaw: 0.0 }
+    description: "直角弯杆绕行 — 出口区"
+
+  - id: 3
+    position: { x: 5.0, y: -1.0, z: 0.3 }
+    orientation: { roll: 0.0, pitch: 0.0, yaw: 0.0 }
+    description: "碎石坑接近点"
+
+  - id: 4
+    position: { x: 6.5, y: 0.0, z: 0.3 }
+    orientation: { roll: 0.0, pitch: 0.0, yaw: 0.0 }
+    description: "限高杆接近点"
+
+  - id: 5
+    position: { x: 8.0, y: 0.0, z: 0.3 }
+    orientation: { roll: 0.0, pitch: 0.0, yaw: 0.0 }
+    description: "大斜坡 — 底部"
+
+  - id: 6
+    position: { x: 11.0, y: 0.0, z: 1.0 }
+    orientation: { roll: 0.0, pitch: 0.0, yaw: 0.0 }
+    description: "大斜坡 — 顶部"
+
+  - id: 7
+    position: { x: 9.5, y: 1.5, z: 0.5 }
+    orientation: { roll: 0.0, pitch: 0.0, yaw: 0.0 }
+    description: "木桥 A 接近点"
+
+  - id: 8
+    position: { x: 9.5, y: -1.5, z: 0.5 }
+    orientation: { roll: 0.0, pitch: 0.0, yaw: 0.0 }
+    description: "木桥 B 接近点"
+
+  - id: 9
+    position: { x: 7.0, y: 2.0, z: 0.3 }
+    orientation: { roll: 0.0, pitch: 0.0, yaw: 0.0 }
+    description: "T 形台阶 — 底部"
+
+  - id: 10
+    position: { x: 7.5, y: 2.5, z: 0.8 }
+    orientation: { roll: 0.0, pitch: 0.0, yaw: 0.0 }
+    description: "T 形台阶 — 顶部 (也是第二起始区)"
+
+  - id: 11
+    position: { x: 3.0, y: 0.0, z: 0.3 }
+    orientation: { roll: 0.0, pitch: 0.0, yaw: 0.0 }
+    description: "高墙接近点"
+
+  - id: 12
+    position: { x: 0.0, y: 0.0, z: 0.15 }
+    orientation: { roll: 0.0, pitch: 0.0, yaw: 0.0 }
+    description: "终点区 / 返回起点"

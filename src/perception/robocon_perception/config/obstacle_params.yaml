@@ -1,0 +1,29 @@
+# 障碍物检测参数
+obstacle_detector:
+  ros__parameters:
+    cloud_topic: "/cloud_registered"
+    voxel_leaf_size: 0.05
+    roi_min_x: -5.0
+    roi_max_x: 5.0
+    roi_min_y: -5.0
+    roi_max_y: 5.0
+    roi_min_z: -1.0
+    roi_max_z: 1.5
+    cluster_tolerance: 0.08
+    min_cluster_size: 15
+    max_cluster_size: 20000
+    ground_distance_threshold: 0.03
+    stabilization_frames: 5
+
+    # 分类阈值
+    pole_min_height: 0.5
+    pole_max_diameter: 0.08
+    bar_z_min: 0.25
+    bar_z_max: 0.35
+    bar_min_length: 0.8
+    bar_max_thickness: 0.1
+    wall_min_height: 0.3
+    wall_min_width: 0.5
+    slope_min_inclination: 5.0
+    step_min_height: 0.08
+    step_min_depth: 0.2

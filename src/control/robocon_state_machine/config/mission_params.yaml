@@ -1,0 +1,66 @@
+# 2026 Robocon 障碍赛任务参数
+mission:
+  obstacle_count: 8
+  time_limit: 210.0           # 秒
+  nav_approach_distance: 2.0  # 米 — 从 Nav2 切换到直接控制
+  fine_approach_distance: 0.3 # 米 — 触发障碍穿越
+  recovery_time: 3.0          # 秒 — 恢复状态下的重试等待时间
+
+# 各障碍物特定参数 (由各自的处理器使用)
+obstacles:
+  1:  # 直角弯杆绕行
+    type: POLE_WEAVE
+    tag_entry: 1
+    tag_exit: 2
+    weave_speed: 0.15
+
+  2:  # 碎石/木屑坑
+    type: GRAVEL_PIT
+    tag_approach: 3
+    gravel_speed: 0.1
+    normal_speed: 0.15
+
+  3:  # 限高杆 (300mm)
+    type: HEIGHT_BAR
+    tag_approach: 4
+    crouch_height: 0.2
+    crawl_speed: 0.08
+    crawl_duration: 8.0
+
+  4:  # 大斜坡 (11.3°)
+    type: SLOPE
+    tag_bottom: 5
+    tag_top: 6
+    climb_speed: 0.1
+    ridge_traverse_duration: 10.0
+    min_pitch_deg: 10.0
+
+  5:  # 木桥 A
+    type: BRIDGE
+    tag_approach: 7
+    bridge_speed: 0.08
+    bridge_cross_duration: 15.0
+
+  6:  # 木桥 B
+    type: BRIDGE
+    tag_approach: 8
+    bridge_speed: 0.08
+    bridge_cross_duration: 15.0
+
+  7:  # T 形台阶
+    type: T_STEPS
+    tag_bottom: 9
+    tag_top: 10
+    step_climb_speed: 0.05
+    climb_up_duration: 12.0
+    climb_down_duration: 12.0
+
+  8:  # 高墙
+    type: HIGH_WALL
+    tag_approach: 11
+    alignment_threshold_rad: 0.1
+    climb_duration: 10.0
+
+end_zone:
+  tag_id: 12
+  pose: { x: 0.0, y: 0.0, z: 0.0, yaw: 0.0 }
