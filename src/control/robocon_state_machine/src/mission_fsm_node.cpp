@@ -75,7 +75,7 @@ MissionFSM::MissionFSM(const rclcpp::NodeOptions & options)
 void MissionFSM::tick()
 {
   // 检查任务超时
-  auto elapsed = (this->now() - mission_start_time_).seconds();
+  auto elapsed = (get_clock()->now() - mission_start_time_).seconds();
   if (state_ != INIT && state_ != MISSION_COMPLETE &&
       elapsed > mission_time_limit_) {
     RCLCPP_WARN(this->get_logger(), "任务超时! 已耗时 %.1fs", elapsed);
@@ -93,9 +93,9 @@ void MissionFSM::tick()
     case WAITING_FOR_START:
       // 等待外部启动信号 (操作员或定时器)
       // 目前2秒后自动启动
-      if ((this->now() - state_start_time_).seconds() > 2.0) {
+      if ((get_clock()->now() - state_start_time_).seconds() > 2.0) {
         RCLCPP_INFO(this->get_logger(), "任务启动!");
-        mission_start_time_ = this->now();
+        mission_start_time_ = get_clock()->now();
         transit(NAV_TO_OBSTACLE);
       }
       break;
@@ -140,7 +140,7 @@ void MissionFSM::tick()
       cmd.command_type = robocon_interfaces::msg::RobotCommand::STOP;
       command_pub_->publish(cmd);
 
-      if ((this->now() - state_start_time_).seconds() > 5.0) {
+      if ((get_clock()->now() - state_start_time_).seconds() > 5.0) {
         RCLCPP_INFO(this->get_logger(), "障碍物 %d 穿越完成", current_obstacle_ + 1);
         current_obstacle_++;
         saveCheckpoint();
@@ -169,7 +169,7 @@ void MissionFSM::tick()
       command_pub_->publish(cmd);
 
       // 简单恢复: 等待3秒后重试当前障碍物
-      if ((this->now() - state_start_time_).seconds() > 3.0) {
+      if ((get_clock()->now() - state_start_time_).seconds() > 3.0) {
         RCLCPP_INFO(this->get_logger(), "恢复: 重新尝试障碍物 %d", current_obstacle_ + 1);
         transit(NAV_TO_OBSTACLE);
       }
@@ -183,7 +183,7 @@ void MissionFSM::transit(MissionState new_state)
   RCLCPP_INFO(this->get_logger(), "状态切换: %s -> %s",
               stateName(state_), stateName(new_state));
   state_ = new_state;
-  state_start_time_ = this->now();
+  state_start_time_ = get_clock()->now();
 }
 
 const char * MissionFSM::stateName(MissionState state) const

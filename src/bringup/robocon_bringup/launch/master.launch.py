@@ -41,9 +41,9 @@ def generate_launch_description():
         executable='static_transform_publisher',
         name='static_tf_livox',
         arguments=[
-            '0.15', '0.0', '0.35',    # x, y, z (头部位置)
-            '3.14159', '0.0', '0.0',  # roll=180°, pitch=0, yaw=0 (倒装)
-            'base_link', 'livox_frame'
+            '--x', '0.15', '--y', '0.0', '--z', '0.35',
+            '--roll', '3.14159', '--pitch', '0.0', '--yaw', '0.0',
+            '--frame-id', 'base_link', '--child-frame-id', 'livox_frame'
         ]
     )
 
@@ -53,9 +53,9 @@ def generate_launch_description():
         executable='static_transform_publisher',
         name='static_tf_camera',
         arguments=[
-            '0.25', '0.0', '0.30',    # x, y, z (前向, 居中)
-            '0.0', '0.0', '0.0',      # roll, pitch, yaw
-            'base_link', 'camera_link'
+            '--x', '0.25', '--y', '0.0', '--z', '0.30',
+            '--roll', '0.0', '--pitch', '0.0', '--yaw', '0.0',
+            '--frame-id', 'base_link', '--child-frame-id', 'camera_link'
         ]
     )
 
@@ -65,9 +65,9 @@ def generate_launch_description():
         executable='static_transform_publisher',
         name='static_tf_imu',
         arguments=[
-            '0.15', '0.0', '0.35',    # 与 livox_frame 相同位置
-            '3.14159', '0.0', '0.0',  # 与 livox_frame 相同姿态
-            'base_link', 'imu_link'
+            '--x', '0.15', '--y', '0.0', '--z', '0.35',
+            '--roll', '3.14159', '--pitch', '0.0', '--yaw', '0.0',
+            '--frame-id', 'base_link', '--child-frame-id', 'imu_link'
         ]
     )
 
@@ -82,6 +82,7 @@ def generate_launch_description():
         ]),
         launch_arguments={
             'config_file': 'mid360.yaml',
+            'rviz': 'false',  # Nano 无显示器，禁用 rviz
         }.items()
     )
 
