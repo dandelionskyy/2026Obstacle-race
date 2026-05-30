@@ -1,0 +1,33 @@
+Panels:
+  - Class: rviz_common/Displays
+    Name: Displays
+  - Class: rviz_common/Views
+    Name: Views
+Visualization Manager:
+  Displays:
+    - Class: rviz_common/Grid
+      Name: Grid
+    - Class: rviz_default_plugins/TF
+      Name: TF
+    - Class: rviz_default_plugins/PointCloud2
+      Name: Registered Cloud
+      Topic: /cloud_registered
+    - Class: rviz_default_plugins/PointCloud2
+      Name: Laser Map
+      Topic: /Laser_map
+    - Class: rviz_default_plugins/Odometry
+      Name: Odometry
+      Topic: /Odometry
+    - Class: rviz_default_plugins/Path
+      Name: Path
+      Topic: /path
+    - Class: rviz_default_plugins/MarkerArray
+      Name: Obstacle Markers
+      Topic: /obstacle_markers
+    - Class: rviz_default_plugins/Map
+      Name: Costmap
+      Topic: /map
+  Global Options:
+    Fixed Frame: map
+    Frame Rate: 30
+  Value: true
