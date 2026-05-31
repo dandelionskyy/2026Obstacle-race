@@ -53,13 +53,20 @@ echo '║  FAST-LIO2 激光惯性里程计                  ║'
 echo '║  输出: /Odometry, /cloud_registered, /path ║'
 echo '╚════════════════════════════════════════════╝'
 
-# 发布静态 TF: map->odom 恒等 (测试用)
-ros2 run tf2_ros static_transform_publisher 0 0 0 0 0 0 map odom &
-# 发布静态 TF: odom->base_link 恒等 (FAST-LIO 会覆盖, 先占位)
-ros2 run tf2_ros static_transform_publisher 0 0 0 0 0 0 odom base_link &
-# 发布静态 TF: base_link->livox_frame (MID-360 倒装)
+# 发布静态 TF (使用命名参数，避免位置参数的四元数/Euler歧义)
 ros2 run tf2_ros static_transform_publisher \
-    0.15 0 0.35 3.14159 0 0 base_link livox_frame &
+    --x 0 --y 0 --z 0 \
+    --roll 0 --pitch 0 --yaw 0 \
+    --frame-id map --child-frame-id odom &
+ros2 run tf2_ros static_transform_publisher \
+    --x 0 --y 0 --z 0 \
+    --roll 0 --pitch 0 --yaw 0 \
+    --frame-id odom --child-frame-id base_link &
+# base_link -> livox_frame: MID-360 倒装 (roll=pi)
+ros2 run tf2_ros static_transform_publisher \
+    --x 0.15 --y 0 --z 0.35 \
+    --roll 3.14159 --pitch 0 --yaw 0 \
+    --frame-id base_link --child-frame-id livox_frame &
 
 echo '等待 LiDAR 数据 (5s)...'
 sleep 5

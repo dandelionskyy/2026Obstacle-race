@@ -74,6 +74,8 @@ private:
   double ground_distance_threshold_{0.03};
 
   bool publish_debug_clouds_{false};
+  int debug_publish_interval_{3};   // 每 N 帧发布一次调试云
+  uint64_t frame_count_{0};
 
   std::mutex mutex_;
 };

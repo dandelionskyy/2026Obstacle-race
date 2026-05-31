@@ -30,16 +30,16 @@ ObstacleDetectorNode::ObstacleDetectorNode(const rclcpp::NodeOptions & options)
 
   // 调试点云发布者
   publish_debug_clouds_ = this->declare_parameter("publish_debug_clouds", false);
+  debug_publish_interval_ = this->declare_parameter("debug_publish_interval", 3);
   if (publish_debug_clouds_) {
-    // 使用可靠 QoS 以兼容 RViz2 的 RELIABLE 订阅
-    auto debug_qos = rclcpp::QoS(5).reliable().transient_local();
+    auto debug_qos = rclcpp::QoS(rclcpp::KeepLast(1)).reliable();
     debug_ground_pub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>(
       "/debug/ground_cloud", debug_qos);
     debug_non_ground_pub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>(
       "/debug/non_ground_cloud", debug_qos);
     debug_clusters_pub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>(
       "/debug/cluster_cloud", debug_qos);
-    RCLCPP_INFO(this->get_logger(), "调试点云发布已启用");
+    RCLCPP_INFO(this->get_logger(), "调试点云发布已启用 (每 %d 帧)", debug_publish_interval_);
   }
 
   RCLCPP_INFO(this->get_logger(), "ObstacleDetectorNode 已初始化");
@@ -74,6 +74,11 @@ void ObstacleDetectorNode::pointcloudCallback(
   const sensor_msgs::msg::PointCloud2::SharedPtr msg)
 {
   auto t_start = std::chrono::steady_clock::now();
+  frame_count_++;
+
+  // 是否在本帧发布调试云 (跳帧降频)
+  bool publish_debug_this_frame = publish_debug_clouds_ &&
+    (frame_count_ % debug_publish_interval_ == 0);
 
   // ROS消息转换为PCL格式
   pcl::PointCloud<pcl::PointXYZI>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZI>);
@@ -126,8 +131,8 @@ void ObstacleDetectorNode::pointcloudCallback(
     classifier_.setGroundPlane(ground_plane.coefficients);
   }
 
-  // [调试] 发布地面和非地面点云
-  if (publish_debug_clouds_) {
+  // [调试] 发布地面和非地面点云 (跳帧)
+  if (publish_debug_this_frame) {
     // 地面点云 → 绿色
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr debug_ground(new pcl::PointCloud<pcl::PointXYZRGB>);
     debug_ground->reserve(ground_cloud->size());
@@ -186,8 +191,8 @@ void ObstacleDetectorNode::pointcloudCallback(
         detected_obstacles.push_back(info);
       }
 
-      // [调试] 按类型着色加入调试聚类点云
-      if (publish_debug_clouds_) {
+      // [调试] 按类型着色加入调试聚类点云 (跳帧)
+      if (publish_debug_this_frame) {
         uint8_t r = 128, g = 128, b = 128;  // UNKNOWN = 灰
         switch (info.type) {
           case robocon_interfaces::msg::ObstacleInfo::POLE:        r = 0;   g = 0;   b = 255; break;
@@ -208,8 +213,8 @@ void ObstacleDetectorNode::pointcloudCallback(
       }
     }
 
-    // [调试] 发布聚类着色点云
-    if (publish_debug_clouds_ && !debug_clusters->empty()) {
+    // [调试] 发布聚类着色点云 (跳帧)
+    if (publish_debug_this_frame && !debug_clusters->empty()) {
       publishDebugCloud(debug_clusters, debug_clusters_pub_);
     }
   }
