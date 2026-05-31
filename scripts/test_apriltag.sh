@@ -69,8 +69,8 @@ ros2 run robocon_apriltag apriltag_detector_node.py \
     --ros-args \
     -p tag_family:=tag36h11 \
     -p tag_size:=0.16 \
-    -p image_topic:=/camera/color/image_raw \
-    -p camera_info_topic:=/camera/color/camera_info \
+    -p image_topic:=/camera/camera/color/image_raw \
+    -p camera_info_topic:=/camera/camera/color/camera_info \
     -p visualize:=true
 exec bash
 "

@@ -1,6 +1,6 @@
 /pcd2pgm:
   ros__parameters:
-    file_directory: /home/nano/fast-lio-nav/ros2_humble_main/
+    file_directory: /home/nano/2026Obstacle-race/maps/
     file_name: scan
     flag_pass_through: false
     map_resolution: 0.05

@@ -154,8 +154,8 @@ class AprilTagDetectorNode(Node):
 
         self.detection_pub.publish(tag_array)
 
-        # 可视化
-        if self.visualize and detections:
+        # 可视化 (始终显示画面)
+        if self.visualize:
             for det in detections:
                 # 绘制边界框角点
                 for i in range(4):
@@ -165,7 +165,8 @@ class AprilTagDetectorNode(Node):
 
                 # 绘制标签 ID 和距离
                 cx, cy = map(int, det.center)
-                cv2.putText(cv_image, f'ID:{det.tag_id} d:{td.distance:.2f}m',
+                dist = float(np.linalg.norm(det.pose_t))
+                cv2.putText(cv_image, f'ID:{det.tag_id} d:{dist:.2f}m',
                             (cx - 30, cy - 10),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 

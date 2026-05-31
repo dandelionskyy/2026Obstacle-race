@@ -36,7 +36,8 @@ echo '║  2026 Robocon — 本机模式 (RViz)            ║'
 echo '╚════════════════════════════════════════════╝'
 source /opt/ros/humble/setup.bash
 source ${WORKSPACE}/install/setup.bash
-ros2 launch robocon_bringup master.launch.py use_rviz:=true
+ros2 launch robocon_bringup master.launch.py map:=/home/nano/2026Obstacle-race/maps/field_map.yaml use_rviz:=true
+
 " C-m
 
 # 分割
