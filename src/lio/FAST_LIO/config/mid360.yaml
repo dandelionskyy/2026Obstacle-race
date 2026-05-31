@@ -3,7 +3,7 @@
         feature_extract_enable: false
         point_filter_num: 3
         max_iteration: 5
-        filter_size_surf: 0.3
+        filter_size_surf: 0.2             # 0.3→0.2, 保留更多点避免<5阈值跳帧
         filter_size_map: 0.2
         cube_side_length: 1000.0
         runtime_pos_log_enable: false
@@ -17,20 +17,20 @@
                                         # This param will take effect no matter what time_sync_en is. So if the time offset is not known exactly, please set as 0.0
 
         preprocess:
-            lidar_type: 1                # 1 for Livox serials LiDAR, 2 for Velodyne LiDAR, 3 for ouster LiDAR, 4 for any other pointcloud input
+            lidar_type: 4                # 4 = MID360 PointCloud2 输入
             scan_line:  4
-            blind: 0.5
+            blind: 0.1                   # 盲区从0.5降到0.1m, 晃动时保留更多近处点
             timestamp_unit: 3
             scan_rate: 10
 
         mapping:
-            acc_cov: 1.2
-            gyr_cov: 1.2
-            b_acc_cov: 0.01
-            b_gyr_cov: 0.01
+            acc_cov: 2.5                 # 增大IMU噪声协方差 → 少信IMU,多信LiDAR
+            gyr_cov: 2.5
+            b_acc_cov: 0.05
+            b_gyr_cov: 0.05
             fov_degree:    360.0
-            det_range:     100.0          
-            extrinsic_est_en:  true      # true: enable the online estimation of IMU-LiDAR extrinsic
+            det_range:     100.0
+            extrinsic_est_en:  false     # 晃动时关外参估计, 避免与运动耦合发散
             extrinsic_T: [ -0.011, -0.02329, 0.04412 ]
             extrinsic_R: [ 1., 0., 0.,
                             0., 1., 0.,
