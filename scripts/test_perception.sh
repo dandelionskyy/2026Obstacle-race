@@ -112,7 +112,9 @@ ros2 run robocon_perception obstacle_detector_node \
     --ros-args \
     -p cloud_topic:=/cloud_registered \
     -p base_frame:=base_link \
-    -p publish_debug_clouds:=true
+    -p publish_debug_clouds:=true \
+    -p debug_publish_interval:=5 \
+    -p voxel_leaf_size:=0.08
 
 exec bash
 "

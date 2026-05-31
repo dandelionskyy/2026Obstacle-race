@@ -17,9 +17,9 @@ ObstacleDetectorNode::ObstacleDetectorNode(const rclcpp::NodeOptions & options)
 {
   loadParameters();
 
-  // 订阅者
+  // 订阅者 (KeepLast(1) 避免积压)
   cloud_sub_ = this->create_subscription<sensor_msgs::msg::PointCloud2>(
-    cloud_topic_, rclcpp::SensorDataQoS(),
+    cloud_topic_, rclcpp::QoS(rclcpp::KeepLast(1)).reliable(),
     std::bind(&ObstacleDetectorNode::pointcloudCallback, this, std::placeholders::_1));
 
   // 发布者
@@ -74,6 +74,17 @@ void ObstacleDetectorNode::pointcloudCallback(
   const sensor_msgs::msg::PointCloud2::SharedPtr msg)
 {
   auto t_start = std::chrono::steady_clock::now();
+
+  // 防止回调重入: 上一帧还在处理就丢弃本帧
+  if (processing_.exchange(true)) {
+    dropped_frames_++;
+    if (dropped_frames_ % 20 == 1) {
+      RCLCPP_WARN(this->get_logger(),
+        "处理不过来! 已丢弃 %lu 帧 (当前帧跳过)", dropped_frames_);
+    }
+    return;
+  }
+
   frame_count_++;
 
   // 是否在本帧发布调试云 (跳帧降频)
@@ -216,6 +227,10 @@ void ObstacleDetectorNode::pointcloudCallback(
     // [调试] 发布聚类着色点云 (跳帧)
     if (publish_debug_this_frame && !debug_clusters->empty()) {
       publishDebugCloud(debug_clusters, debug_clusters_pub_);
+      RCLCPP_INFO(this->get_logger(),
+        "📡 调试发布 #%lu | 聚类=%zu点/%zu簇 | 检测到=%zu个障碍物",
+        frame_count_, debug_clusters->size(), cluster_indices.size(),
+        detected_obstacles.size());
     }
   }
 
@@ -252,8 +267,11 @@ void ObstacleDetectorNode::pointcloudCallback(
   auto t_end = std::chrono::steady_clock::now();
   auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(t_end - t_start);
   if (elapsed.count() > 50) {
-    RCLCPP_WARN(this->get_logger(), "点云处理耗时 %ld ms", elapsed.count());
+    RCLCPP_WARN(this->get_logger(), "点云处理耗时 %ld ms (帧 #%lu)",
+      elapsed.count(), frame_count_);
   }
+
+  processing_ = false;
 }
 
 void ObstacleDetectorNode::stabilizeDetections(

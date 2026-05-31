@@ -1,6 +1,7 @@
 #ifndef ROBOCON_PERCEPTION__OBSTACLE_DETECTOR_HPP_
 #define ROBOCON_PERCEPTION__OBSTACLE_DETECTOR_HPP_
 
+#include <atomic>
 #include <deque>
 #include <memory>
 #include <mutex>
@@ -76,6 +77,9 @@ private:
   bool publish_debug_clouds_{false};
   int debug_publish_interval_{3};   // 每 N 帧发布一次调试云
   uint64_t frame_count_{0};
+
+  std::atomic<bool> processing_{false};  // 防止回调重入
+  uint64_t dropped_frames_{0};           // 丢弃帧计数
 
   std::mutex mutex_;
 };
