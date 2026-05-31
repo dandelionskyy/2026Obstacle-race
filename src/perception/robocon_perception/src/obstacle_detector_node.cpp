@@ -28,6 +28,18 @@ ObstacleDetectorNode::ObstacleDetectorNode(const rclcpp::NodeOptions & options)
   marker_pub_ = this->create_publisher<visualization_msgs::msg::MarkerArray>(
     "/obstacle_markers", rclcpp::QoS(10));
 
+  // 调试点云发布者
+  publish_debug_clouds_ = this->declare_parameter("publish_debug_clouds", false);
+  if (publish_debug_clouds_) {
+    debug_ground_pub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>(
+      "/debug/ground_cloud", rclcpp::SensorDataQoS());
+    debug_non_ground_pub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>(
+      "/debug/non_ground_cloud", rclcpp::SensorDataQoS());
+    debug_clusters_pub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>(
+      "/debug/cluster_cloud", rclcpp::SensorDataQoS());
+    RCLCPP_INFO(this->get_logger(), "调试点云发布已启用");
+  }
+
   RCLCPP_INFO(this->get_logger(), "ObstacleDetectorNode 已初始化");
   RCLCPP_INFO(this->get_logger(), "  点云话题: %s", cloud_topic_.c_str());
   RCLCPP_INFO(this->get_logger(), "  感兴趣区域: x=[%.1f,%.1f] y=[%.1f,%.1f] z=[%.1f,%.1f]",
@@ -37,6 +49,7 @@ ObstacleDetectorNode::ObstacleDetectorNode(const rclcpp::NodeOptions & options)
 void ObstacleDetectorNode::loadParameters()
 {
   cloud_topic_ = this->declare_parameter("cloud_topic", "/cloud_registered");
+  base_frame_ = this->declare_parameter("base_frame", "base_link");
 
   voxel_leaf_size_ = this->declare_parameter("voxel_leaf_size", 0.05);
 
@@ -111,6 +124,31 @@ void ObstacleDetectorNode::pointcloudCallback(
     classifier_.setGroundPlane(ground_plane.coefficients);
   }
 
+  // [调试] 发布地面和非地面点云
+  if (publish_debug_clouds_) {
+    // 地面点云 → 绿色
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr debug_ground(new pcl::PointCloud<pcl::PointXYZRGB>);
+    debug_ground->reserve(ground_cloud->size());
+    for (const auto & pt : ground_cloud->points) {
+      pcl::PointXYZRGB rgb_pt;
+      rgb_pt.x = pt.x; rgb_pt.y = pt.y; rgb_pt.z = pt.z;
+      rgb_pt.r = 0; rgb_pt.g = 200; rgb_pt.b = 0;
+      debug_ground->push_back(rgb_pt);
+    }
+    publishDebugCloud(debug_ground, debug_ground_pub_);
+
+    // 非地面点云 → 白色
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr debug_non_ground(new pcl::PointCloud<pcl::PointXYZRGB>);
+    debug_non_ground->reserve(non_ground_cloud->size());
+    for (const auto & pt : non_ground_cloud->points) {
+      pcl::PointXYZRGB rgb_pt;
+      rgb_pt.x = pt.x; rgb_pt.y = pt.y; rgb_pt.z = pt.z;
+      rgb_pt.r = 220; rgb_pt.g = 220; rgb_pt.b = 220;
+      debug_non_ground->push_back(rgb_pt);
+    }
+    publishDebugCloud(debug_non_ground, debug_non_ground_pub_);
+  }
+
   // 5. 非地面点欧几里得聚类
   std::vector<robocon_interfaces::msg::ObstacleInfo> detected_obstacles;
 
@@ -130,6 +168,8 @@ void ObstacleDetectorNode::pointcloudCallback(
     ec.extract(cluster_indices);
 
     // 6. 对每个聚类进行分类
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr debug_clusters(new pcl::PointCloud<pcl::PointXYZRGB>);
+
     for (const auto & indices : cluster_indices) {
       pcl::PointCloud<pcl::PointXYZI>::Ptr cluster(new pcl::PointCloud<pcl::PointXYZI>);
       for (int idx : indices.indices) {
@@ -143,6 +183,32 @@ void ObstacleDetectorNode::pointcloudCallback(
       if (info.type != robocon_interfaces::msg::ObstacleInfo::UNKNOWN) {
         detected_obstacles.push_back(info);
       }
+
+      // [调试] 按类型着色加入调试聚类点云
+      if (publish_debug_clouds_) {
+        uint8_t r = 128, g = 128, b = 128;  // UNKNOWN = 灰
+        switch (info.type) {
+          case robocon_interfaces::msg::ObstacleInfo::POLE:        r = 0;   g = 0;   b = 255; break;
+          case robocon_interfaces::msg::ObstacleInfo::GRAVEL_PIT:  r = 139; g = 69;  b = 19;  break;
+          case robocon_interfaces::msg::ObstacleInfo::HEIGHT_BAR:  r = 0;   g = 255; b = 255; break;
+          case robocon_interfaces::msg::ObstacleInfo::SLOPE:       r = 255; g = 128; b = 0;   break;
+          case robocon_interfaces::msg::ObstacleInfo::BRIDGE:      r = 160; g = 0;   b = 255; break;
+          case robocon_interfaces::msg::ObstacleInfo::T_STEPS:     r = 255; g = 255; b = 0;   break;
+          case robocon_interfaces::msg::ObstacleInfo::HIGH_WALL:   r = 255; g = 0;   b = 0;   break;
+          default: break;
+        }
+        for (const auto & pt : cluster->points) {
+          pcl::PointXYZRGB rgb_pt;
+          rgb_pt.x = pt.x; rgb_pt.y = pt.y; rgb_pt.z = pt.z;
+          rgb_pt.r = r; rgb_pt.g = g; rgb_pt.b = b;
+          debug_clusters->push_back(rgb_pt);
+        }
+      }
+    }
+
+    // [调试] 发布聚类着色点云
+    if (publish_debug_clouds_ && !debug_clusters->empty()) {
+      publishDebugCloud(debug_clusters, debug_clusters_pub_);
     }
   }
 
@@ -255,6 +321,18 @@ void ObstacleDetectorNode::publishObstacles(
   if (!markers.markers.empty()) {
     marker_pub_->publish(markers);
   }
+}
+
+void ObstacleDetectorNode::publishDebugCloud(
+  const pcl::PointCloud<pcl::PointXYZRGB>::Ptr & cloud,
+  const rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr & pub)
+{
+  if (!cloud || cloud->empty() || !pub) return;
+  sensor_msgs::msg::PointCloud2 msg;
+  pcl::toROSMsg(*cloud, msg);
+  msg.header.frame_id = base_frame_;  // base_link
+  msg.header.stamp = this->now();
+  pub->publish(msg);
 }
 
 }  // namespace robocon_perception

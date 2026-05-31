@@ -95,6 +95,9 @@ def generate_launch_description():
         launch_arguments={
             'config_file': 'mid360.yaml',
             'rviz': LaunchConfiguration('use_rviz'),
+            'rviz_cfg': PathJoinSubstitution([
+                FindPackageShare('robocon_bringup'), 'config', 'rviz_config.rviz'
+            ]),
         }.items()
     )
 
@@ -135,6 +138,7 @@ def generate_launch_description():
             'map_frame': 'map',
             'base_frame': 'base_link',
             'lidar_frame': 'livox_frame',
+            'publish_debug_clouds': True,
         }]
     )
 
@@ -182,7 +186,7 @@ def generate_launch_description():
             ]),
             'map': LaunchConfiguration('map'),
             'use_map_topic': 'true',
-            'use_rviz': LaunchConfiguration('use_rviz'),
+            'use_rviz': 'false',  # Nav2 RViz 已由 FAST-LIO 统一启动
         }.items()
     )
 

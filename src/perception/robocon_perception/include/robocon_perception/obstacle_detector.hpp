@@ -42,6 +42,16 @@ private:
   rclcpp::Publisher<robocon_interfaces::msg::ObstacleInfo>::SharedPtr obstacle_pub_;
   rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr marker_pub_;
 
+  // 调试点云发布者 (PointXYZRGB → PointCloud2)
+  rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr debug_ground_pub_;
+  rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr debug_non_ground_pub_;
+  rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr debug_clusters_pub_;
+
+  /// 辅助: 将 pcl::PointCloud<PointXYZRGB> 发布为 sensor_msgs::PointCloud2
+  void publishDebugCloud(
+    const pcl::PointCloud<pcl::PointXYZRGB>::Ptr & cloud,
+    const rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr & pub);
+
   // 处理模块
   GroundSegmenter ground_segmenter_;
   ObjectClassifier classifier_;
@@ -53,6 +63,7 @@ private:
 
   // 参数
   std::string cloud_topic_;
+  std::string base_frame_{"base_link"};
   double voxel_leaf_size_{0.05};
   double roi_min_x_{-5.0}, roi_max_x_{5.0};
   double roi_min_y_{-5.0}, roi_max_y_{5.0};
@@ -61,6 +72,8 @@ private:
   int min_cluster_size_{15};
   int max_cluster_size_{20000};
   double ground_distance_threshold_{0.03};
+
+  bool publish_debug_clouds_{false};
 
   std::mutex mutex_;
 };
