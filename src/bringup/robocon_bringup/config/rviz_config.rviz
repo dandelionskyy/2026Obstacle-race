@@ -5,7 +5,7 @@ Panels:
     Name: Views
 Visualization Manager:
   Displays:
-    - Class: rviz_common/Grid
+    - Class: rviz_default_plugins/Grid
       Name: Grid
     - Class: rviz_default_plugins/TF
       Name: TF

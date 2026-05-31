@@ -31,12 +31,14 @@ ObstacleDetectorNode::ObstacleDetectorNode(const rclcpp::NodeOptions & options)
   // 调试点云发布者
   publish_debug_clouds_ = this->declare_parameter("publish_debug_clouds", false);
   if (publish_debug_clouds_) {
+    // 使用可靠 QoS 以兼容 RViz2 的 RELIABLE 订阅
+    auto debug_qos = rclcpp::QoS(5).reliable().transient_local();
     debug_ground_pub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>(
-      "/debug/ground_cloud", rclcpp::SensorDataQoS());
+      "/debug/ground_cloud", debug_qos);
     debug_non_ground_pub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>(
-      "/debug/non_ground_cloud", rclcpp::SensorDataQoS());
+      "/debug/non_ground_cloud", debug_qos);
     debug_clusters_pub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>(
-      "/debug/cluster_cloud", rclcpp::SensorDataQoS());
+      "/debug/cluster_cloud", debug_qos);
     RCLCPP_INFO(this->get_logger(), "调试点云发布已启用");
   }
 
