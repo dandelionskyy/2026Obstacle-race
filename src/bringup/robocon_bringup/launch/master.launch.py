@@ -126,21 +126,21 @@ def generate_launch_description():
     )
 
     # ============================================================
-    # 感知: 障碍物检测器
+    # 感知: 障碍物检测器 (暂时禁用 — 效果不好, 先用 SLAM+Nav2+AprilTag)
     # ============================================================
-    obstacle_detector_node = Node(
-        package='robocon_perception',
-        executable='obstacle_detector_node',
-        name='obstacle_detector',
-        output='screen',
-        parameters=[{
-            'cloud_topic': '/cloud_registered',
-            'map_frame': 'map',
-            'base_frame': 'base_link',
-            'lidar_frame': 'livox_frame',
-            'publish_debug_clouds': True,
-        }]
-    )
+    # obstacle_detector_node = Node(
+    #     package='robocon_perception',
+    #     executable='obstacle_detector_node',
+    #     name='obstacle_detector',
+    #     output='screen',
+    #     parameters=[{
+    #         'cloud_topic': '/cloud_registered',
+    #         'map_frame': 'map',
+    #         'base_frame': 'base_link',
+    #         'lidar_frame': 'livox_frame',
+    #         'publish_debug_clouds': True,
+    #     }]
+    # )
 
     # ============================================================
     # 视觉: AprilTag 检测 + 位姿修正
@@ -251,8 +251,8 @@ def generate_launch_description():
         # 点云处理 (等待 FAST-LIO2)
         TimerAction(period=3.0, actions=[pc2laser_node]),
 
-        # 感知 (等待 FAST-LIO2)
-        TimerAction(period=3.0, actions=[obstacle_detector_node]),
+        # 感知 (暂时禁用)
+        # TimerAction(period=3.0, actions=[obstacle_detector_node]),
 
         # AprilTag (等待相机)
         TimerAction(period=5.0, actions=[
