@@ -1,0 +1,24 @@
+/**:
+    ros__parameters:
+        # 航点列表 — 按顺序依次导航
+        # 坐标系: map
+        # x, y: 位置 (米)
+        # yaw:   朝向角 (弧度, 0=朝+x方向)
+        waypoints:
+            - { x: 1.0, y: 0.0, yaw: 0.0 }
+            - { x: 2.5, y: 0.0, yaw: 0.0 }
+            - { x: 4.0, y: 0.0, yaw: 0.0 }
+            - { x: 5.5, y: 0.0, yaw: 0.0 }
+            - { x: 7.0, y: 0.0, yaw: 0.0 }
+            - { x: 8.5, y: 0.0, yaw: 0.0 }
+            - { x: 10.0, y: 0.0, yaw: 0.0 }
+            - { x: 11.5, y: 0.0, yaw: 0.0 }
+
+        # 回到起点
+        return_to_start: false
+        return_x: 0.0
+        return_y: 0.0
+        return_yaw: 0.0
+
+        # 到达每个航点后等待 (秒)
+        wait_at_waypoint: 0.0

@@ -61,5 +61,7 @@ install(TARGETS
 
 install(DIRECTORY include/ DESTINATION include)
 install(DIRECTORY config DESTINATION share/${PROJECT_NAME})
+install(PROGRAMS scripts/waypoint_nav_node.py
+  DESTINATION lib/${PROJECT_NAME})
 
 ament_package()
