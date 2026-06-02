@@ -37,11 +37,11 @@
 
         publish:
             path_en: true
-            effect_map_en: true
-            map_en: true
+            effect_map_en: false       # 关掉特征点发布, 省CPU
+            map_en: false              # 关掉全局地图发布, Open3D用预建PCD
             scan_publish_en:  true
             dense_publish_en: false
-            scan_bodyframe_pub_en: true
+            scan_bodyframe_pub_en: true   # 保留: Open3D定位需要 /cloud_registered_body
 
         pcd_save:
             pcd_save_en: true
