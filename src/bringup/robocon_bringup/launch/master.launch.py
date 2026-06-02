@@ -191,17 +191,14 @@ def generate_launch_description():
     )
 
     # ============================================================
-    # 定位管理器 (提供 map->odom 变换)
+    # 定位: Open3D 全局定位 (提供 map->odom TF, 连续 ICP + 卡尔曼滤波)
     # ============================================================
-    localization_manager_node = Node(
-        package='robocon_localization',
-        executable='localization_manager_node',
-        name='localization_manager',
-        output='screen',
-        parameters=[{
-            'pcd_map_path': LaunchConfiguration('pcd_map_path'),
-            'start_zone': LaunchConfiguration('start_zone'),
-        }]
+    open3d_loc_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([
+            PathJoinSubstitution([
+                FindPackageShare('open3d_loc'), 'launch', 'open3d_loc.launch.py'
+            ])
+        ]),
     )
 
     # ============================================================
@@ -261,7 +258,7 @@ def generate_launch_description():
         ]),
 
         # 定位 (等待 FAST-LIO2 + 点云)
-        TimerAction(period=5.0, actions=[localization_manager_node]),
+        TimerAction(period=5.0, actions=[open3d_loc_launch]),
 
         # Nav2 (等待定位 + scan)
         TimerAction(period=8.0, actions=[nav2_launch]),

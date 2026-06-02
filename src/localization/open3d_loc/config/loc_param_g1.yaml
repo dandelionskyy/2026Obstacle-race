@@ -1,0 +1,24 @@
+global_localization_node:
+  ros__parameters:
+    # x, y, z, roll, pitch, yaw (单位:度degrees)
+    initialpose: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+    # PCD 地图路径
+    path_map: "/home/dandelion/fast-lio-nav-obstacle/maps/field_map.pcd"
+
+    # odom topic 名称 — 匹配 FAST-LIO 输出
+    odom_topic: "/Odometry"
+    # scan topic 名称 — 匹配 FAST-LIO 去畸变点云
+    scan_topic: "/cloud_registered_body"
+
+    # true: 里程计 frame 已经是 base_link (fast-lio-nav-obstacle 默认)
+    # false: 里程计 frame 是 imu_link，需要 TF 转换 (luckrobot 旧版)
+    odom_is_baselink: true
+
+    # true: 发布 motion_link 相关 TF (luckrobot 旧版兼容)
+    use_motion_link: false
+
+    kf_baselink2map:
+      x: [0.001, 0.002]
+      y: [0.001, 0.005]
+      z: [0.00001, 0.04]
